@@ -1,0 +1,20 @@
+databases:
+  - name: docqa-db
+    plan: free
+    databaseName: docqa
+
+services:
+  - type: web
+    name: docqa-ai
+    runtime: python
+    plan: free
+    buildCommand: pip install -r requirements.txt
+    startCommand: uvicorn app.main:app --host 0.0.0.0 --port $PORT
+    healthCheckPath: /health
+    envVars:
+      - key: PYTHON_VERSION
+        value: 3.12.3
+      - key: DATABASE_URL
+        fromDatabase: {name: docqa-db, property: connectionString}
+      - key: ANTHROPIC_API_KEY
+        sync: false   # optional: leave empty to run in passage-only mode
